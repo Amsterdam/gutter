@@ -1,0 +1,18 @@
+# Files
+*.log
+*.pyc
+
+# Folders
+/uploads
+
+# IDE
+/.idea
+/.pydevproject
+
+
+# Docker
+/pgdata
+/pgdataio
+
+
+celerybeat-schedule

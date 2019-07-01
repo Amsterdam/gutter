@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  gutter_api:
+    restart: always
+    container_name: gutter_api
+    build: .
+    environment:
+       - GUTTER_DB_TYPE=postgres
+       - GUTTER_DB_URL=db
+       - GUTTER_DB_PORT=5432
+       - GUTTER_DB_USER=gutter
+       - GUTTER_DB_PASSWORD=amsterdam
+       - GUTTER_DB_NAME=gutter
+       - GUTTER_ADMIN_USER=admin
+       - GUTTER_ADMIN_PASSWORD=amsterdam
+       - LD_LIBRARY_PATH=/app/oraclelib
+    ports:
+       - "8004:9808"
+    volumes:
+       - ./:/app
+    links:
+       - db
+    # good practice as described here: https://docs.docker.com/compose/startup-order/
+    command: ["./wait-for-it.sh", "db:5432", "--", "python","/app/bjoern.wsgi"]
+
+  pgadmin:
+    restart: always
+    container_name: gutter_pgadmin
+    build: ./dockerfiles/pgadmin/
+    environment:
+        - POSTGRES_HOSTNAME=gutter
+        - POSTGRES_HOST=db
+        - POSTGRES_PORT=5432
+        - POSTGRES_DEFAULTDB=gutter
+        - APACHE_SERVERNAME=pgadmin
+    ports:
+      - "8002:80"
+    links:
+      - db
+
+  db:
+    restart: always
+    container_name: gutter_db
+    build: ./dockerfiles/postgres_db/
+    environment:
+        - POSTGRES_USER=gutter
+        - POSTGRES_PASSWORD=amsterdam
+        - POSTGRES_DB=gutter
+        - PGDATA=/pgdata
+    ports:
+        - "8003:5432"
+    volumes:
+        - ./pgdata:/pgdata
+        - ./pgdataio:/pgdataio

@@ -81,6 +81,9 @@ class AccessController:
 
         self.logger = logging.getLogger(__name__)
 
+        if not self.logger.handlers:
+            logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)s %(levelname)-4s %(message)s')
+
     # ----
 
     def create_tables(self, engine=None):

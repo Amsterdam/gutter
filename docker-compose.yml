@@ -14,15 +14,13 @@ services:
        - GUTTER_DB_NAME=gutter
        - GUTTER_ADMIN_USER=admin
        - GUTTER_ADMIN_PASSWORD=amsterdam
-       - LD_LIBRARY_PATH=/app/oraclelib
     ports:
        - "8004:9808"
     volumes:
        - ./:/app
     links:
        - db
-    # good practice as described here: https://docs.docker.com/compose/startup-order/
-    command: ["./wait-for-it.sh", "db:5432", "--", "python","/app/bjoern.wsgi"]
+    command: ["python3","/app/bjoern.wsgi"]
 
   pgadmin:
     restart: always

@@ -12,6 +12,8 @@ import logging
 
 from gutterlib.apicentral.ApiCentral import ApiCentral
 
+import logging
+
 """ SETTINGS 
 
 Please make sure these settings are populated with environment variables:
@@ -55,16 +57,13 @@ API_DESCRIPTION = """
 
 def init_app(app):
 
-    # sets config for logging (which is a singleton): https://docs.python.org/2/library/logging.html#logging.basicConfig
-    # - fixes 'no handler found' when ran using Docker
-    # - fixes duplicate output across application
-    # - fixes having to set logger and handler in every 'base'-class e.g. ApiCentral, GutterStore ...
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)s %(levelname)-4s %(message)s')
+    logger = logging.getLogger(__name__)
+    logger.info("Initiating logging")
 
     with open('images/ascii_logo.txt', 'r') as f:
         logo = f.read()
         app.logger.info(logo)
-
 
     app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY') or 'PLEASE_FILL_IN_A_SECRET_KEY_IN_ENVIRONMENT_VARIABLES!!'
     app.config['JWT_SECRET_KEY'] = os.environ.get('FLASK_JWT_SECRET_KEY') or 'PLEASE_FILL_IN_A_SECRET_KEY_IN_ENVIRONMENT_VARIABLES!!'

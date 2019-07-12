@@ -58,24 +58,29 @@ class GutterFlow:
 
     def setup_logger(self):
 
+        self.logger = logging.getLogger(__name__)
+
+        if not self.logger.handlers:
+            logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)s %(levelname)-4s %(message)s')
+
         # NOTE: non-pep8 standard in logging library
 
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(level=logging.INFO)
-
-        try:
-            handler = logging.StreamHandler()
-            handler.setLevel(logging.INFO)
-            formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)-4s %(message)s')
-            handler.setFormatter(formatter)
-            
-            if (self.logger.hasHandlers()): # see: https://stackoverflow.com/questions/7173033/duplicate-log-output-when-using-python-logging-module
-                self.logger.handlers.clear()
-            
-            self.logger.addHandler(handler)
-
-        except Exception as e:
-            self.logger.error(e)
+        # self.logger = logging.getLogger(__name__)
+        # self.logger.setLevel(level=logging.INFO)
+        #
+        # try:
+        #     handler = logging.StreamHandler()
+        #     handler.setLevel(logging.INFO)
+        #     formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)-4s %(message)s')
+        #     handler.setFormatter(formatter)
+        #
+        #     if (self.logger.hasHandlers()): # see: https://stackoverflow.com/questions/7173033/duplicate-log-output-when-using-python-logging-module
+        #         self.logger.handlers.clear()
+        #
+        #     self.logger.addHandler(handler)
+        #
+        # except Exception as e:
+        #     self.logger.error(e)
 
     # ----
 

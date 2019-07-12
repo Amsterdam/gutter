@@ -38,6 +38,7 @@ from flask_restplus import Api
 import uuid
 import logging
 import datetime
+import time
 
 
 class ApiCentral:
@@ -90,6 +91,9 @@ class ApiCentral:
     def setup_logger(self):
         self.logger = logging.getLogger(__name__)
 
+        if not self.logger.handlers:
+            logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)s %(levelname)-4s %(message)s')
+
     # ----
 
     def connect(self, db_type=None, url=None, port=None, user=None, password=None, name=None, admin_username=None, admin_password=None):
@@ -120,11 +124,11 @@ class ApiCentral:
             self.db_session_maker.configure(bind=self.db_engine)
             self.db_session = self.db_session_maker()
 
-            # if connection is successful this flag is set, otherwise Exception will happen
-            self.db_engine.connect()  # db_engine is lazy, does not connect directly only if we do so
-            self.has_connection = True
+            self.has_connection = self.wait_for_connection(self.db_engine)
+            if self.has_connection is False:
+                self.logger.error("No connection with database, quitting!")
+                return
 
-            self.logger.info("ApiCentral Connected to database") # is this really needed? only for checks. Do with GutterStore instance?
             self.check_and_create_database()
 
             self.create_admin_user(admin_username, admin_password)
@@ -141,6 +145,29 @@ class ApiCentral:
             self.logger.error("Cannot connect to Gutter database! {0}".format(e))
 
             return False
+
+    # ----
+
+    def wait_for_connection(self, db_engine, timeout=15):
+        self.logger.info("Waiting for database connection...")
+        waiting_for = 0
+
+        # HACKY: shouldn't catch end retry based on non-BaseException-error...
+        while True:
+            try:
+                connection = db_engine.connect()
+                if connection is not None:
+                    self.logger.info("Found a database connection!")
+                    return True
+            except Exception:  # tried to specify 'psycopg2.OperationalError' here but doesnt work
+                time.sleep(1)
+                waiting_for += 1
+                self.logger.info("Waited for {0} second(s)".format(waiting_for))
+
+                if waiting_for == timeout:
+                    self.logger.info(
+                        "Timed out waiting for a database connection after {0} seconds!".format(waiting_for))
+                    return False
 
     # ----
 

@@ -2,7 +2,9 @@
 
 ![gutter-logo](images/logo.png)
 
-An API generator packed with ETL pipelines, data syncing and an analytics engine.
+An backend-in-a-box (Think something like Google Firebase, but open source and free) used for hi-speed prototyping.
+
+Has an API generator. Can do ETL jobs from other databases and API's end contains an analytics engine ( in progress ). 
 
 Created within the CTO of the Municipality of Amsterdam.
 
@@ -35,6 +37,8 @@ $ curl --header "Content-Type: application/json" --request POST --data "{
 ```
 
 #### Create API as a Service
+
+Gutter can generate everything needed for a REST API based on one data model definition. We use JSON Schema to define the data models.
 
 - First set the token as environment variable (token can also be set directly in curl):
 ```
